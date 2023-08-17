@@ -2,6 +2,8 @@
     "compilerOptions": {
         "module": "Node16",
         "target": "ES2017",
+        "jsx": "react",
+        "jsxFactory": "createCommand",
         "outDir": "dist/"
     },
     "include": ["src/*"]

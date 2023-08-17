@@ -1,6 +1,6 @@
 {
     "name": "get-git-folder",
-    "version": "0.1.0",
+    "version": "0.1.2",
     "license": "LGPL-3.0",
     "author": "shiy2008@gmail.com",
     "description": "A file downloader based on Git CLI",
@@ -21,13 +21,14 @@
     "type": "module",
     "bin": "dist/index.js",
     "dependencies": {
-        "zx": "^7.2.2"
+        "commander-jsx": "^0.6.9",
+        "zx": "^7.2.3"
     },
     "devDependencies": {
         "husky": "^8.0.3",
-        "lint-staged": "^13.2.2",
-        "prettier": "^2.8.8",
-        "typescript": "^5.1.3"
+        "lint-staged": "^14.0.0",
+        "prettier": "^3.0.2",
+        "typescript": "~5.1.6"
     },
     "prettier": {
         "tabWidth": 4,

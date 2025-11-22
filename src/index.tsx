@@ -8,10 +8,11 @@ $.verbose = true;
 async function downloadGitFolder(
     GitURL: string,
     branchName?: string,
-    folderOrFilePath?: string
+    folderOrFilePath?: string,
+    localPath?: string
 ) {
     const tempFolder = path.join(os.tmpdir(), new URL(GitURL).pathname),
-        targetFolder = process.cwd();
+        targetFolder = localPath || process.cwd();
 
     await fs.remove(tempFolder);
     await fs.mkdirp(tempFolder);
@@ -107,18 +108,20 @@ Command.execute(
     <Command name="xgit">
         <Command
             name="download"
-            parameters="<GitURL> [branchName] [folderOrFilePath]"
+            parameters="<GitURL> [branchName] [folderOrFilePath] [localPath]"
             description="Download folders or files from a Git repository"
             executor={(
                 _,
                 GitURL: string,
                 branchName = 'main',
-                folderOrFilePath?: string
+                folderOrFilePath?: string,
+                localPath?: string
             ) =>
                 downloadGitFolder(
                     GitURL,
                     branchName as string,
-                    folderOrFilePath
+                    folderOrFilePath,
+                    localPath
                 )
             }
         />

@@ -24,7 +24,7 @@ npx git-utility # your arguments here
 ### Download folders or files from Git repositories
 
 ```shell
-# Download entire repository
+# Download entire repository to current directory
 xgit download https://github.com/your-org/your-repo
 
 # Download from specific branch
@@ -32,6 +32,9 @@ xgit download https://github.com/your-org/your-repo main
 
 # Download specific folder or file
 xgit download https://github.com/your-org/your-repo main path/to/your-folder/or-file
+
+# Download to a specific local path
+xgit download https://github.com/your-org/your-repo main path/to/your-folder/or-file ./local-destination
 ```
 
 ### Upload folders to Git repositories
@@ -56,7 +59,7 @@ xgit submodule remove path/to/submodule
 
 ## Commands
 
-- `xgit download <GitURL> [branchName] [folderOrFilePath]` - Download folders or files from a Git repository
+- `xgit download <GitURL> [branchName] [folderOrFilePath] [localPath]` - Download folders or files from a Git repository
 - `xgit upload <sourceFolder> <GitURL> <targetBranch> [targetFolder]` - Upload a folder to a Git repository
 - `xgit submodule remove [path]` - Remove a Git submodule
 

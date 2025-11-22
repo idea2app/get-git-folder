@@ -80,19 +80,40 @@ async function uploadFolder(
         ? sourceFolder
         : path.join(originalCwd, sourceFolder);
 
-    cd(sourcePath);
+    // Validate source folder exists
+    if (!(await fs.pathExists(sourcePath))) {
+        throw new Error(`Source folder does not exist: ${sourcePath}`);
+    }
 
-    await $`git init`;
-    await $`git remote add origin ${GitURL}`;
-    await $`git checkout -b ${targetBranch}`;
-    await $`git add .`;
-    await $`git commit -m "upload by Git-utility CLI"`;
-    await $`git push --set-upstream origin ${targetBranch} -f`;
+    const sourceStat = await fs.stat(sourcePath);
+    if (!sourceStat.isDirectory()) {
+        throw new Error(`Source path is not a directory: ${sourcePath}`);
+    }
 
-    cd(originalCwd);
+    try {
+        cd(sourcePath);
 
-    console.log(`
-Successfully uploaded ${sourceFolder} to ${GitURL} on branch ${targetBranch}`);
+        await $`git init`;
+
+        // Check if remote already exists and update it
+        try {
+            await $`git remote get-url origin`;
+            await $`git remote set-url origin ${GitURL}`;
+        } catch {
+            await $`git remote add origin ${GitURL}`;
+        }
+
+        await $`git checkout -b ${targetBranch}`;
+        await $`git add .`;
+        await $`git commit -m "upload by Git-utility CLI"`;
+        await $`git push --set-upstream origin ${targetBranch} -f`;
+
+        console.log(`
+Successfully uploaded ${sourceFolder} to ${GitURL} on branch ${targetBranch}
+Note: Changes were force pushed to the remote branch.`);
+    } finally {
+        cd(originalCwd);
+    }
 }
 
 Command.execute(

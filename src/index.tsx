@@ -70,6 +70,31 @@ Note: You may want to commit these changes with:
     git commit -m "Remove submodule ${submodulePath}"`);
 }
 
+async function uploadFolder(
+    sourceFolder: string,
+    GitURL: string,
+    targetBranch: string
+) {
+    const originalCwd = process.cwd();
+    const sourcePath = path.isAbsolute(sourceFolder)
+        ? sourceFolder
+        : path.join(originalCwd, sourceFolder);
+
+    cd(sourcePath);
+
+    await $`git init`;
+    await $`git remote add origin ${GitURL}`;
+    await $`git checkout -b ${targetBranch}`;
+    await $`git add .`;
+    await $`git commit -m "upload by Git-utility CLI"`;
+    await $`git push --set-upstream origin ${targetBranch} -f`;
+
+    cd(originalCwd);
+
+    console.log(`
+Successfully uploaded ${sourceFolder} to ${GitURL} on branch ${targetBranch}`);
+}
+
 Command.execute(
     <Command name="xgit">
         <Command
@@ -88,6 +113,17 @@ Command.execute(
                     folderOrFilePath
                 )
             }
+        />
+        <Command
+            name="upload"
+            parameters="<sourceFolder> <GitURL> <targetBranch>"
+            description="Upload a folder to a Git repository"
+            executor={(
+                _,
+                sourceFolder: string,
+                GitURL: string,
+                targetBranch: string
+            ) => uploadFolder(sourceFolder, GitURL, targetBranch)}
         />
         <Command name="submodule" description="Manage Git submodules">
             <Command

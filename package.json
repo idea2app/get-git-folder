@@ -10,6 +10,7 @@
         "command",
         "cli",
         "download",
+        "upload",
         "submodule"
     ],
     "homepage": "https://github.com/idea2app/Git-utility#readme",

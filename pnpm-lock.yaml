@@ -9,8 +9,8 @@ importers:
   .:
     dependencies:
       commander-jsx:
-        specifier: ^0.7.1
-        version: 0.7.1(typescript@5.9.3)
+        specifier: ^0.7.2
+        version: 0.7.2(typescript@5.9.3)
       zx:
         specifier: ^8.8.5
         version: 8.8.5
@@ -19,14 +19,14 @@ importers:
         specifier: ^11.0.4
         version: 11.0.4
       '@types/node':
-        specifier: ^22.18.13
-        version: 22.18.13
+        specifier: ^22.19.1
+        version: 22.19.1
       husky:
         specifier: ^9.1.7
         version: 9.1.7
       lint-staged:
-        specifier: ^16.2.6
-        version: 16.2.6
+        specifier: ^16.2.7
+        version: 16.2.7
       prettier:
         specifier: ^3.6.2
         version: 3.6.2
@@ -39,8 +39,9 @@ packages:
   '@swc/helpers@0.5.17':
     resolution: {integrity: sha512-5IKx/Y13RsYd+sauPb2x+U/xZikHjolzfuDgTAl/Tdf3Q8rslRvC19NKDLgAJQ6wsqADk10ntlv08nPFw/gO/A==}
 
-  '@tech_query/node-toolkit@2.0.0-beta.0':
-    resolution: {integrity: sha512-pIvyYVadm4Y6+qK3vbgSI+cKUqC0kUOQTR5Ys06QXzKfYc9Q5vr6U0/MQfzfWkmc6RJGZZM8Mqantsgwo2FV1w==}
+  '@tech_query/node-toolkit@2.0.0-beta.3':
+    resolution: {integrity: sha512-ShhOWszgwwq19UlbtI8BCbPz7H4XLVk41fydKbUxwnVK1Fa24CE8imkPbddpOG3e6NEdOujKkCHKtAY84VVtqg==}
+    engines: {node: '>=20'}
 
   '@tokenizer/token@0.3.0':
     resolution: {integrity: sha512-OvjF+z51L3ov0OyAU0duzsYuvO01PH7x4t6DJx+guahgTnBHkhJdG7soQeTSFLWN3efnHyibZ4Z8l2EuWwJN3A==}
@@ -51,15 +52,15 @@ packages:
   '@types/jsonfile@6.1.4':
     resolution: {integrity: sha512-D5qGUYwjvnNNextdU59/+fI+spnwtTFmyQP0h+PfIOSkNfpU6AOICUOkm4i0OnSk+NyjdPJrxCDro0sJsWlRpQ==}
 
-  '@types/node@22.18.13':
-    resolution: {integrity: sha512-Bo45YKIjnmFtv6I1TuC8AaHBbqXtIo+Om5fE4QiU1Tj8QR/qt+8O3BAtOimG5IFmwaWiPmB3Mv3jtYzBA4Us2A==}
+  '@types/node@22.19.1':
+    resolution: {integrity: sha512-LCCV0HdSZZZb34qifBsyWlUmok6W7ouER+oQIGBScS8EsZsQbrtFTUrDX4hOl+CS6p7cnNC4td+qrSVGSCTUfQ==}
 
   abort-controller@3.0.0:
     resolution: {integrity: sha512-h8lQ8tacZYnR3vNQTgibj+tODHI5/+l06Au2Pcriv/Gmet0eaj4TwWH41sO9wnHDiQsEj19q0drzdWdeAHtweg==}
     engines: {node: '>=6.5'}
 
-  ansi-escapes@7.1.1:
-    resolution: {integrity: sha512-Zhl0ErHcSRUaVfGUeUdDuLgpkEo8KIFjB4Y9uAc46ScOpdDiU1Dbyplh7qWJeJ/ZHpbyMSM26+X3BySgnIz40Q==}
+  ansi-escapes@7.2.0:
+    resolution: {integrity: sha512-g6LhBsl+GBPRWGWsBtutpzBYuIIdBkLEvad5C/va/74Db018+5TZiyA26cZJAr3Rft5lprVqOIPxf5Vid6tqAw==}
     engines: {node: '>=18'}
 
   ansi-regex@6.2.2:
@@ -91,8 +92,8 @@ packages:
   colorette@2.0.20:
     resolution: {integrity: sha512-IfEDxwoWIjkeXL1eXcDiow4UbKjhLdq6/EuSVR9GMN7KVH3r9gQ83e73hsz1Nd1T3ijd5xv1wcWRYO+D6kCI2w==}
 
-  commander-jsx@0.7.1:
-    resolution: {integrity: sha512-Nw742YdqLwBcND+jt0wo/ejdFXe/A1WRKQSnIILnMGWYKoeJa48Q2k//o1MV692RgWVsm5hgOKLeQx2Ki2rTiQ==}
+  commander-jsx@0.7.2:
+    resolution: {integrity: sha512-7hNzASXVkyDfbdAMYJ6lb4ZuQ8/PNqqogpHOSMGHKfIqxxeW8wDrdQKK1rlPKdikOuF427jXtXSF8AWRKHqp5g==}
 
   commander@14.0.2:
     resolution: {integrity: sha512-TywoWNNRbhoD0BXs1P3ZEScW8W5iKrnbithIl0YH+uCmBd0QpPOA8yc82DS3BIE5Ma6FnBVUsJ7wVUDz4dvOWQ==}
@@ -154,8 +155,8 @@ packages:
   jsonfile@6.2.0:
     resolution: {integrity: sha512-FGuPw30AdOIUTRMC2OMRtQV+jkVj2cfPqSeWXv1NEAJ1qZ5zb1X6z1mFhbfOB/iy3ssJCD+3KuZ8r8C3uVFlAg==}
 
-  lint-staged@16.2.6:
-    resolution: {integrity: sha512-s1gphtDbV4bmW1eylXpVMk2u7is7YsrLl8hzrtvC70h4ByhcMLZFY01Fx05ZUDNuv1H8HO4E+e2zgejV1jVwNw==}
+  lint-staged@16.2.7:
+    resolution: {integrity: sha512-lDIj4RnYmK7/kXMya+qJsmkRFkGolciXjrsZ6PC25GdTfWOAWetR0ZbsNXRAj1EHHImRSalc+whZFg56F5DVow==}
     engines: {node: '>=20.17'}
     hasBin: true
 
@@ -311,7 +312,7 @@ snapshots:
     dependencies:
       tslib: 2.8.1
 
-  '@tech_query/node-toolkit@2.0.0-beta.0':
+  '@tech_query/node-toolkit@2.0.0-beta.3':
     dependencies:
       file-type: 16.5.4
       fs-extra: 11.3.2
@@ -323,13 +324,13 @@ snapshots:
   '@types/fs-extra@11.0.4':
     dependencies:
       '@types/jsonfile': 6.1.4
-      '@types/node': 22.18.13
+      '@types/node': 22.19.1
 
   '@types/jsonfile@6.1.4':
     dependencies:
-      '@types/node': 22.18.13
+      '@types/node': 22.19.1
 
-  '@types/node@22.18.13':
+  '@types/node@22.19.1':
     dependencies:
       undici-types: 6.21.0
 
@@ -337,7 +338,7 @@ snapshots:
     dependencies:
       event-target-shim: 5.0.1
 
-  ansi-escapes@7.1.1:
+  ansi-escapes@7.2.0:
     dependencies:
       environment: 1.1.0
 
@@ -367,9 +368,9 @@ snapshots:
 
   colorette@2.0.20: {}
 
-  commander-jsx@0.7.1(typescript@5.9.3):
+  commander-jsx@0.7.2(typescript@5.9.3):
     dependencies:
-      '@tech_query/node-toolkit': 2.0.0-beta.0
+      '@tech_query/node-toolkit': 2.0.0-beta.3
       tslib: 2.8.1
       web-utility: 4.6.4(typescript@5.9.3)
     transitivePeerDependencies:
@@ -424,7 +425,7 @@ snapshots:
     optionalDependencies:
       graceful-fs: 4.2.11
 
-  lint-staged@16.2.6:
+  lint-staged@16.2.7:
     dependencies:
       commander: 14.0.2
       listr2: 9.0.5
@@ -445,7 +446,7 @@ snapshots:
 
   log-update@6.1.0:
     dependencies:
-      ansi-escapes: 7.1.1
+      ansi-escapes: 7.2.0
       cli-cursor: 5.0.0
       slice-ansi: 7.1.2
       strip-ansi: 7.1.2

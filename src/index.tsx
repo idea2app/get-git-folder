@@ -8,10 +8,12 @@ $.verbose = true;
 async function downloadGitFolder(
     GitURL: string,
     branchName?: string,
-    folderOrFilePath?: string
+    folderOrFilePath?: string,
+    targetFolder = '.'
 ) {
-    const tempFolder = path.join(os.tmpdir(), new URL(GitURL).pathname),
-        targetFolder = process.cwd();
+    targetFolder = path.resolve(targetFolder);
+
+    const tempFolder = path.join(os.tmpdir(), new URL(GitURL).pathname);
 
     await fs.remove(tempFolder);
     await fs.mkdirp(tempFolder);
@@ -39,10 +41,8 @@ async function downloadGitFolder(
     if (sourceStat.isFile()) {
         const fileName = path.basename(sourcePath);
 
-        await fs.copy(sourcePath, path.join(targetFolder, fileName), {
-            overwrite: true
-        });
-    } else await fs.copy(sourcePath, targetFolder, { overwrite: true });
+        await fs.copy(sourcePath, path.join(targetFolder, fileName));
+    } else await fs.copy(sourcePath, targetFolder);
 }
 
 async function listSubmodules() {
@@ -70,24 +70,78 @@ Note: You may want to commit these changes with:
     git commit -m "Remove submodule ${submodulePath}"`);
 }
 
+async function uploadFolder(
+    sourceFolder: string,
+    GitURL: string,
+    targetBranch: string,
+    targetFolder?: string
+) {
+    sourceFolder = path.resolve(sourceFolder);
+
+    if (targetFolder) {
+        const tempFolder = path.join(os.tmpdir(), new URL(GitURL).pathname);
+
+        await fs.remove(tempFolder);
+        await fs.mkdirp(tempFolder);
+        cd(tempFolder);
+
+        await $`git clone -b ${targetBranch} ${GitURL} .`;
+
+        targetFolder = path.join(tempFolder, targetFolder);
+
+        await fs.remove(targetFolder);
+        await fs.mkdirp(targetFolder);
+        await fs.copy(sourceFolder, targetFolder);
+        await fs.remove(path.join(targetFolder, '.git'));
+
+        await $`git add .`;
+        await $`git commit -m "upload by Git-utility CLI"`;
+        await $`git push origin ${targetBranch}`;
+    } else {
+        cd(sourceFolder);
+
+        await $`git init`;
+        await $`git remote add origin ${GitURL}`;
+        await $`git checkout -b ${targetBranch}`;
+        await $`git add .`;
+        await $`git commit -m "upload by Git-utility CLI"`;
+        await $`git push --set-upstream origin ${targetBranch} -f`;
+        await fs.remove('.git');
+    }
+}
+
 Command.execute(
     <Command name="xgit">
         <Command
             name="download"
-            parameters="<GitURL> [branchName] [folderOrFilePath]"
+            parameters="<GitURL> [branchName] [folderOrFilePath] [targetFolder]"
             description="Download folders or files from a Git repository"
             executor={(
                 _,
                 GitURL: string,
                 branchName = 'main',
-                folderOrFilePath?: string
+                folderOrFilePath?: string,
+                targetFolder?: string
             ) =>
                 downloadGitFolder(
                     GitURL,
                     branchName as string,
-                    folderOrFilePath
+                    folderOrFilePath,
+                    targetFolder
                 )
             }
+        />
+        <Command
+            name="upload"
+            parameters="<sourceFolder> <GitURL> <targetBranch> [targetFolder]"
+            description="Upload a folder to a Git repository"
+            executor={(
+                _,
+                sourceFolder: string,
+                GitURL: string,
+                targetBranch: string,
+                targetFolder?: string
+            ) => uploadFolder(sourceFolder, GitURL, targetBranch, targetFolder)}
         />
         <Command name="submodule" description="Manage Git submodules">
             <Command

@@ -12,7 +12,7 @@ async function downloadGitFolder(
     localPath?: string
 ) {
     const tempFolder = path.join(os.tmpdir(), new URL(GitURL).pathname),
-        targetFolder = localPath || process.cwd();
+        targetFolder = localPath ?? process.cwd();
 
     await fs.remove(tempFolder);
     await fs.mkdirp(tempFolder);

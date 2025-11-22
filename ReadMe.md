@@ -37,8 +37,11 @@ xgit download https://github.com/your-org/your-repo main path/to/your-folder/or-
 ### Upload folders to Git repositories
 
 ```shell
-# Upload a folder to a Git repository on a specific branch
+# Upload a folder to a Git repository on a specific branch (force push)
 xgit upload path/to/source-folder https://github.com/your-org/your-repo target-branch
+
+# Upload to a specific directory in the repository (non-force push)
+xgit upload path/to/source-folder https://github.com/your-org/your-repo target-branch target/directory
 ```
 
 ### Manage Git submodules
@@ -54,7 +57,7 @@ xgit submodule remove path/to/submodule
 ## Commands
 
 - `xgit download <GitURL> [branchName] [folderOrFilePath]` - Download folders or files from a Git repository
-- `xgit upload <sourceFolder> <GitURL> <targetBranch>` - Upload a folder to a Git repository
+- `xgit upload <sourceFolder> <GitURL> <targetBranch> [targetFolder]` - Upload a folder to a Git repository
 - `xgit submodule remove [path]` - Remove a Git submodule
 
 [1]: https://git-scm.com/

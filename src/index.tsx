@@ -73,46 +73,40 @@ Note: You may want to commit these changes with:
 async function uploadFolder(
     sourceFolder: string,
     GitURL: string,
-    targetBranch: string
+    targetBranch: string,
+    targetFolder?: string
 ) {
-    const originalCwd = process.cwd();
-    const sourcePath = path.isAbsolute(sourceFolder)
-        ? sourceFolder
-        : path.join(originalCwd, sourceFolder);
+    const tempFolder = targetFolder
+        ? path.join(os.tmpdir(), new URL(GitURL).pathname)
+        : sourceFolder;
 
-    // Validate source folder exists
-    if (!(await fs.pathExists(sourcePath))) {
-        throw new Error(`Source folder does not exist: ${sourcePath}`);
-    }
-
-    const sourceStat = await fs.stat(sourcePath);
-    if (!sourceStat.isDirectory()) {
-        throw new Error(`Source path is not a directory: ${sourcePath}`);
-    }
-
-    try {
-        cd(sourcePath);
+    if (targetFolder) {
+        await fs.remove(tempFolder);
+        await fs.mkdirp(tempFolder);
+        cd(tempFolder);
 
         await $`git init`;
+        await $`git remote add origin ${GitURL}`;
+        await $`git pull origin ${targetBranch}`;
+        await $`git checkout ${targetBranch}`;
 
-        // Check if remote already exists and update it
-        try {
-            await $`git remote get-url origin`;
-            await $`git remote set-url origin ${GitURL}`;
-        } catch {
-            await $`git remote add origin ${GitURL}`;
-        }
+        await fs.remove(path.join(tempFolder, targetFolder));
+        await fs.copy(sourceFolder, path.join(tempFolder, targetFolder), {
+            overwrite: true
+        });
 
+        await $`git add .`;
+        await $`git commit -m "upload by Git-utility CLI"`;
+        await $`git push origin ${targetBranch}`;
+    } else {
+        cd(sourceFolder);
+
+        await $`git init`;
+        await $`git remote add origin ${GitURL}`;
         await $`git checkout -b ${targetBranch}`;
         await $`git add .`;
         await $`git commit -m "upload by Git-utility CLI"`;
         await $`git push --set-upstream origin ${targetBranch} -f`;
-
-        console.log(`
-Successfully uploaded ${sourceFolder} to ${GitURL} on branch ${targetBranch}
-Note: Changes were force pushed to the remote branch.`);
-    } finally {
-        cd(originalCwd);
     }
 }
 
@@ -137,14 +131,15 @@ Command.execute(
         />
         <Command
             name="upload"
-            parameters="<sourceFolder> <GitURL> <targetBranch>"
+            parameters="<sourceFolder> <GitURL> <targetBranch> [targetFolder]"
             description="Upload a folder to a Git repository"
             executor={(
                 _,
                 sourceFolder: string,
                 GitURL: string,
-                targetBranch: string
-            ) => uploadFolder(sourceFolder, GitURL, targetBranch)}
+                targetBranch: string,
+                targetFolder?: string
+            ) => uploadFolder(sourceFolder, GitURL, targetBranch, targetFolder)}
         />
         <Command name="submodule" description="Manage Git submodules">
             <Command

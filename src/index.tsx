@@ -9,10 +9,9 @@ async function downloadGitFolder(
     GitURL: string,
     branchName?: string,
     folderOrFilePath?: string,
-    localPath?: string
+    localPath = folderOrFilePath
 ) {
-    const tempFolder = path.join(os.tmpdir(), new URL(GitURL).pathname),
-        targetFolder = localPath ?? process.cwd();
+    const tempFolder = path.join(os.tmpdir(), new URL(GitURL).pathname);
 
     await fs.remove(tempFolder);
     await fs.mkdirp(tempFolder);
@@ -36,6 +35,7 @@ async function downloadGitFolder(
         : tempFolder;
 
     const sourceStat = await fs.stat(sourcePath);
+    const targetFolder = localPath ?? process.cwd();
 
     if (sourceStat.isFile()) {
         const fileName = path.basename(sourcePath);

@@ -76,24 +76,17 @@ async function uploadFolder(
     targetBranch: string,
     targetFolder?: string
 ) {
-    const tempFolder = targetFolder
-        ? path.join(os.tmpdir(), new URL(GitURL).pathname)
-        : sourceFolder;
-
     if (targetFolder) {
+        const tempFolder = path.join(os.tmpdir(), new URL(GitURL).pathname);
+
         await fs.remove(tempFolder);
         await fs.mkdirp(tempFolder);
         cd(tempFolder);
 
-        await $`git init`;
-        await $`git remote add origin ${GitURL}`;
-        await $`git pull origin ${targetBranch}`;
-        await $`git checkout ${targetBranch}`;
+        await $`git clone -b ${targetBranch} ${GitURL} .`;
 
         await fs.remove(path.join(tempFolder, targetFolder));
-        await fs.copy(sourceFolder, path.join(tempFolder, targetFolder), {
-            overwrite: true
-        });
+        await fs.copy(sourceFolder, path.join(tempFolder, targetFolder));
 
         await $`git add .`;
         await $`git commit -m "upload by Git-utility CLI"`;

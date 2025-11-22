@@ -59,7 +59,7 @@ xgit submodule remove path/to/submodule
 
 ## Commands
 
-- `xgit download <GitURL> [branchName] [folderOrFilePath] [localPath]` - Download folders or files from a Git repository
+- `xgit download <GitURL> [branchName] [folderOrFilePath] [targetFolder]` - Download folders or files from a Git repository
 - `xgit upload <sourceFolder> <GitURL> <targetBranch> [targetFolder]` - Upload a folder to a Git repository
 - `xgit submodule remove [path]` - Remove a Git submodule
 

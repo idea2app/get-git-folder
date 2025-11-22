@@ -9,8 +9,10 @@ async function downloadGitFolder(
     GitURL: string,
     branchName?: string,
     folderOrFilePath?: string,
-    localPath = folderOrFilePath
+    targetFolder = '.'
 ) {
+    targetFolder = path.resolve(targetFolder);
+
     const tempFolder = path.join(os.tmpdir(), new URL(GitURL).pathname);
 
     await fs.remove(tempFolder);
@@ -35,15 +37,12 @@ async function downloadGitFolder(
         : tempFolder;
 
     const sourceStat = await fs.stat(sourcePath);
-    const targetFolder = localPath ?? process.cwd();
 
     if (sourceStat.isFile()) {
         const fileName = path.basename(sourcePath);
 
-        await fs.copy(sourcePath, path.join(targetFolder, fileName), {
-            overwrite: true
-        });
-    } else await fs.copy(sourcePath, targetFolder, { overwrite: true });
+        await fs.copy(sourcePath, path.join(targetFolder, fileName));
+    } else await fs.copy(sourcePath, targetFolder);
 }
 
 async function listSubmodules() {
@@ -77,6 +76,8 @@ async function uploadFolder(
     targetBranch: string,
     targetFolder?: string
 ) {
+    sourceFolder = path.resolve(sourceFolder);
+
     if (targetFolder) {
         const tempFolder = path.join(os.tmpdir(), new URL(GitURL).pathname);
 
@@ -86,8 +87,12 @@ async function uploadFolder(
 
         await $`git clone -b ${targetBranch} ${GitURL} .`;
 
-        await fs.remove(path.join(tempFolder, targetFolder));
-        await fs.copy(sourceFolder, path.join(tempFolder, targetFolder));
+        targetFolder = path.join(tempFolder, targetFolder);
+
+        await fs.remove(targetFolder);
+        await fs.mkdirp(targetFolder);
+        await fs.copy(sourceFolder, targetFolder);
+        await fs.remove(path.join(targetFolder, '.git'));
 
         await $`git add .`;
         await $`git commit -m "upload by Git-utility CLI"`;
@@ -101,6 +106,7 @@ async function uploadFolder(
         await $`git add .`;
         await $`git commit -m "upload by Git-utility CLI"`;
         await $`git push --set-upstream origin ${targetBranch} -f`;
+        await fs.remove('.git');
     }
 }
 
@@ -108,20 +114,20 @@ Command.execute(
     <Command name="xgit">
         <Command
             name="download"
-            parameters="<GitURL> [branchName] [folderOrFilePath] [localPath]"
+            parameters="<GitURL> [branchName] [folderOrFilePath] [targetFolder]"
             description="Download folders or files from a Git repository"
             executor={(
                 _,
                 GitURL: string,
                 branchName = 'main',
                 folderOrFilePath?: string,
-                localPath?: string
+                targetFolder?: string
             ) =>
                 downloadGitFolder(
                     GitURL,
                     branchName as string,
                     folderOrFilePath,
-                    localPath
+                    targetFolder
                 )
             }
         />

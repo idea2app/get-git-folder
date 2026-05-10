@@ -74,40 +74,52 @@ async function uploadFolder(
     sourceFolder: string,
     GitURL: string,
     targetBranch: string,
-    targetFolder?: string
+    targetFolder?: string,
+    { message = 'upload by Git-utility CLI', force = false } = {}
 ) {
     sourceFolder = path.resolve(sourceFolder);
 
-    if (targetFolder) {
-        const tempFolder = path.join(os.tmpdir(), new URL(GitURL).pathname);
-
-        await fs.remove(tempFolder);
-        await fs.mkdirp(tempFolder);
-        cd(tempFolder);
-
-        await $`git clone -b ${targetBranch} ${GitURL} .`;
-
-        targetFolder = path.join(tempFolder, targetFolder);
-
-        await fs.remove(targetFolder);
-        await fs.mkdirp(targetFolder);
-        await fs.copy(sourceFolder, targetFolder);
-        await fs.remove(path.join(targetFolder, '.git'));
-
-        await $`git add .`;
-        await $`git commit -m "upload by Git-utility CLI"`;
-        await $`git push origin ${targetBranch}`;
-    } else {
+    if (force) {
         cd(sourceFolder);
 
         await $`git init`;
         await $`git remote add origin ${GitURL}`;
         await $`git checkout -b ${targetBranch}`;
         await $`git add .`;
-        await $`git commit -m "upload by Git-utility CLI"`;
+        await $`git commit -m ${message}`;
         await $`git push --set-upstream origin ${targetBranch} -f`;
         await fs.remove('.git');
+
+        return;
     }
+
+    const tempFolder = path.join(os.tmpdir(), new URL(GitURL).pathname);
+
+    await fs.remove(tempFolder);
+    await fs.mkdirp(tempFolder);
+    cd(tempFolder);
+
+    await $`git clone -b ${targetBranch} ${GitURL} .`;
+
+    const uploadTarget = targetFolder
+        ? path.join(tempFolder, targetFolder)
+        : tempFolder;
+
+    await fs.mkdirp(uploadTarget);
+
+    for (const entry of await fs.readdir(sourceFolder))
+        if (entry !== '.git')
+            await fs.copy(
+                path.join(sourceFolder, entry),
+                path.join(uploadTarget, entry),
+                {
+                    overwrite: true
+                }
+            );
+
+    await $`git add .`;
+    await $`git commit -m ${message}`;
+    await $`git push origin ${targetBranch}`;
 }
 
 Command.execute(
@@ -135,13 +147,30 @@ Command.execute(
             name="upload"
             parameters="<sourceFolder> <GitURL> <targetBranch> [targetFolder]"
             description="Upload a folder to a Git repository"
+            options={{
+                message: {
+                    shortcut: 'm',
+                    parameters: '<message>',
+                    description: 'Custom commit message'
+                },
+                force: {
+                    shortcut: 'f',
+                    description:
+                        'Discard Git history and force-push source folder'
+                }
+            }}
             executor={(
-                _,
+                { message, force },
                 sourceFolder: string,
                 GitURL: string,
                 targetBranch: string,
                 targetFolder?: string
-            ) => uploadFolder(sourceFolder, GitURL, targetBranch, targetFolder)}
+            ) =>
+                uploadFolder(sourceFolder, GitURL, targetBranch, targetFolder, {
+                    message: typeof message === 'string' ? message : undefined,
+                    force: force === true
+                })
+            }
         />
         <Command name="submodule" description="Manage Git submodules">
             <Command

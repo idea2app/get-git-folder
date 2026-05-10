@@ -186,16 +186,21 @@ Command.execute(
                 GitURL: string,
                 targetBranch: string,
                 targetFolder?: string
-            ) =>
-                uploadFolder(
+            ) => {
+                const message =
+                    typeof options.message === 'string'
+                        ? options.message
+                        : undefined;
+
+                return uploadFolder(
                     sourceFolder,
                     GitURL,
                     targetBranch,
                     targetFolder,
-                    options.message as string | undefined,
+                    message,
                     options.force === true
-                )
-            }
+                );
+            }}
         />
         <Command name="submodule" description="Manage Git submodules">
             <Command

@@ -106,40 +106,38 @@ async function uploadFolder(
         await $`git add .`;
         await $`git commit -m ${message}`;
         await $`git push origin ${targetBranch}`;
+    } else if (force) {
+        cd(sourceFolder);
+
+        await $`git init`;
+        await $`git remote add origin ${GitURL}`;
+        await $`git checkout -b ${targetBranch}`;
+        await $`git add .`;
+        await $`git commit -m ${message}`;
+        await $`git push --set-upstream origin ${targetBranch} -f`;
+        await fs.remove('.git');
     } else {
-        if (force) {
-            cd(sourceFolder);
+        const tempFolder = path.join(os.tmpdir(), new URL(GitURL).pathname);
 
-            await $`git init`;
-            await $`git remote add origin ${GitURL}`;
-            await $`git checkout -b ${targetBranch}`;
-            await $`git add .`;
-            await $`git commit -m ${message}`;
-            await $`git push --set-upstream origin ${targetBranch} -f`;
-            await fs.remove('.git');
-        } else {
-            const tempFolder = path.join(os.tmpdir(), new URL(GitURL).pathname);
+        await fs.remove(tempFolder);
+        await fs.mkdirp(tempFolder);
+        cd(tempFolder);
 
-            await fs.remove(tempFolder);
-            await fs.mkdirp(tempFolder);
-            cd(tempFolder);
+        await $`git clone -b ${targetBranch} ${GitURL} .`;
 
-            await $`git clone -b ${targetBranch} ${GitURL} .`;
+        for (const entry of await fs.readdir(sourceFolder))
+            if (entry !== '.git')
+                await fs.copy(
+                    path.join(sourceFolder, entry),
+                    path.join(tempFolder, entry),
+                    {
+                        overwrite: true
+                    }
+                );
 
-            for (const entry of await fs.readdir(sourceFolder))
-                if (entry !== '.git')
-                    await fs.copy(
-                        path.join(sourceFolder, entry),
-                        path.join(tempFolder, entry),
-                        {
-                            overwrite: true
-                        }
-                    );
-
-            await $`git add .`;
-            await $`git commit -m ${message}`;
-            await $`git push origin ${targetBranch}`;
-        }
+        await $`git add .`;
+        await $`git commit -m ${message}`;
+        await $`git push origin ${targetBranch}`;
     }
 }
 

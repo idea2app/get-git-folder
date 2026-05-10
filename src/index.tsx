@@ -192,9 +192,7 @@ Command.execute(
                     GitURL,
                     targetBranch,
                     targetFolder,
-                    typeof options.message === 'string'
-                        ? options.message
-                        : undefined,
+                    options.message as string | undefined,
                     options.force === true
                 )
             }

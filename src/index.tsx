@@ -82,17 +82,7 @@ async function uploadFolder(
     const uploadToRoot = !targetFolder;
     targetFolder ||= '.';
 
-    if (uploadToRoot && force) {
-        cd(sourceFolder);
-
-        await $`git init`;
-        await $`git remote add origin ${GitURL}`;
-        await $`git checkout -b ${targetBranch}`;
-        await $`git add .`;
-        await $`git commit -m ${message}`;
-        await $`git push --set-upstream origin ${targetBranch} -f`;
-        await fs.remove('.git');
-    } else {
+    if (!(uploadToRoot && force)) {
         const tempFolder = path.join(os.tmpdir(), new URL(GitURL).pathname);
 
         await fs.remove(tempFolder);
@@ -118,6 +108,16 @@ async function uploadFolder(
         await $`git add .`;
         await $`git commit -m ${message}`;
         await $`git push origin ${targetBranch}`;
+    } else {
+        cd(sourceFolder);
+
+        await $`git init`;
+        await $`git remote add origin ${GitURL}`;
+        await $`git checkout -b ${targetBranch}`;
+        await $`git add .`;
+        await $`git commit -m ${message}`;
+        await $`git push --set-upstream origin ${targetBranch} -f`;
+        await fs.remove('.git');
     }
 }
 

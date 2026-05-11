@@ -79,34 +79,10 @@ async function uploadFolder(
     force = false
 ) {
     sourceFolder = path.resolve(sourceFolder);
+    const uploadToRoot = !targetFolder;
+    targetFolder ||= '.';
 
-    if (targetFolder) {
-        const tempFolder = path.join(os.tmpdir(), new URL(GitURL).pathname);
-
-        await fs.remove(tempFolder);
-        await fs.mkdirp(tempFolder);
-        cd(tempFolder);
-
-        await $`git clone -b ${targetBranch} ${GitURL} .`;
-
-        targetFolder = path.join(tempFolder, targetFolder);
-
-        await fs.mkdirp(targetFolder);
-
-        for (const entry of await fs.readdir(sourceFolder))
-            if (entry !== '.git')
-                await fs.copy(
-                    path.join(sourceFolder, entry),
-                    path.join(targetFolder, entry),
-                    {
-                        overwrite: true
-                    }
-                );
-
-        await $`git add .`;
-        await $`git commit -m ${message}`;
-        await $`git push origin ${targetBranch}`;
-    } else if (force) {
+    if (uploadToRoot && force) {
         cd(sourceFolder);
 
         await $`git init`;
@@ -125,11 +101,15 @@ async function uploadFolder(
 
         await $`git clone -b ${targetBranch} ${GitURL} .`;
 
+        targetFolder = path.join(tempFolder, targetFolder);
+
+        await fs.mkdirp(targetFolder);
+
         for (const entry of await fs.readdir(sourceFolder))
             if (entry !== '.git')
                 await fs.copy(
                     path.join(sourceFolder, entry),
-                    path.join(tempFolder, entry),
+                    path.join(targetFolder, entry),
                     {
                         overwrite: true
                     }

@@ -74,11 +74,15 @@ async function uploadFolder(
     sourceFolder: string,
     GitURL: string,
     targetBranch: string,
-    targetFolder?: string
+    targetFolder?: string,
+    message = 'upload by Git-utility CLI',
+    force = false
 ) {
     sourceFolder = path.resolve(sourceFolder);
+    const uploadToRoot = !targetFolder;
+    targetFolder ||= '.';
 
-    if (targetFolder) {
+    if (!(uploadToRoot && force)) {
         const tempFolder = path.join(os.tmpdir(), new URL(GitURL).pathname);
 
         await fs.remove(tempFolder);
@@ -89,13 +93,20 @@ async function uploadFolder(
 
         targetFolder = path.join(tempFolder, targetFolder);
 
-        await fs.remove(targetFolder);
         await fs.mkdirp(targetFolder);
-        await fs.copy(sourceFolder, targetFolder);
-        await fs.remove(path.join(targetFolder, '.git'));
+
+        for (const entry of await fs.readdir(sourceFolder))
+            if (entry !== '.git')
+                await fs.copy(
+                    path.join(sourceFolder, entry),
+                    path.join(targetFolder, entry),
+                    {
+                        overwrite: true
+                    }
+                );
 
         await $`git add .`;
-        await $`git commit -m "upload by Git-utility CLI"`;
+        await $`git commit -m ${message}`;
         await $`git push origin ${targetBranch}`;
     } else {
         cd(sourceFolder);
@@ -104,7 +115,7 @@ async function uploadFolder(
         await $`git remote add origin ${GitURL}`;
         await $`git checkout -b ${targetBranch}`;
         await $`git add .`;
-        await $`git commit -m "upload by Git-utility CLI"`;
+        await $`git commit -m ${message}`;
         await $`git push --set-upstream origin ${targetBranch} -f`;
         await fs.remove('.git');
     }
@@ -135,13 +146,39 @@ Command.execute(
             name="upload"
             parameters="<sourceFolder> <GitURL> <targetBranch> [targetFolder]"
             description="Upload a folder to a Git repository"
+            options={{
+                message: {
+                    shortcut: 'm',
+                    parameters: '<message>',
+                    description: 'Custom commit message'
+                },
+                force: {
+                    shortcut: 'f',
+                    description:
+                        'Discard Git history and force-push source folder'
+                }
+            }}
             executor={(
-                _,
+                options,
                 sourceFolder: string,
                 GitURL: string,
                 targetBranch: string,
                 targetFolder?: string
-            ) => uploadFolder(sourceFolder, GitURL, targetBranch, targetFolder)}
+            ) => {
+                const message =
+                    typeof options.message === 'string'
+                        ? options.message
+                        : undefined;
+
+                return uploadFolder(
+                    sourceFolder,
+                    GitURL,
+                    targetBranch,
+                    targetFolder,
+                    message,
+                    options.force === true
+                );
+            }}
         />
         <Command name="submodule" description="Manage Git submodules">
             <Command
